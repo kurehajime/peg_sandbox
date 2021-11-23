@@ -16,6 +16,10 @@
             members:values };
   }
 }}
+
+
+
+
 JSON_text
   = ws value:value ws { return value; }
 
@@ -28,7 +32,7 @@ value_separator = ws "," ws
 
 ws "whitespace" = [ \t\n\r]*
 
-// ----- 3. Values -----
+// ----- Values -----
 
 value
   = false
@@ -43,7 +47,7 @@ false = "false" { return lit(false); }
 null  = "null"  { return lit(null);  }
 true  = "true"  { return lit(true);  }
 
-// ----- 4. Objects -----
+// ----- Objects -----
 
 object
   = begin_object
@@ -62,7 +66,7 @@ member
       return key_value(name,value);
     }
 
-// ----- 5. Arrays -----
+// ----- Arrays -----
 
 array
   = begin_array
@@ -74,7 +78,7 @@ array
     end_array
     { return values !== null ? values : arr([]); }
 
-// ----- 6. Numbers -----
+// ----- Numbers -----
 
 number "number"
   = minus? int frac? exp? { return lit(parseFloat(text())); }
@@ -106,7 +110,7 @@ plus
 zero
   = "0"
 
-// ----- 7. Strings -----
+// ----- Strings -----
 
 string "string" 
     = '"' chars:char* '"'  { 
@@ -142,3 +146,55 @@ unescaped
 // See RFC 4234, Appendix B (http://tools.ietf.org/html/rfc4234).
 DIGIT  = [0-9]
 HEXDIG = [0-9a-f]i
+
+// Separator, Space
+Zs = [\u0020\u00A0\u1680\u2000-\u200A\u202F\u205F\u3000]
+
+SourceCharacter
+  = .
+
+WhiteSpace "whitespace"
+  = "\t"
+  / "\v"
+  / "\f"
+  / " "
+  / "\u00A0"
+  / "\uFEFF"
+  / Zs
+
+LineTerminatorSequence "end of line"
+  = "\n"
+  / "\r\n"
+  / "\r"
+  / "\u2028"
+  / "\u2029"
+
+Comment "comment"
+  = MultiLineComment
+  / SingleLineComment
+
+MultiLineComment
+  = "/*" (!"*/" SourceCharacter)* "*/"
+
+MultiLineCommentNoLineTerminator
+  = "/*" (!("*/" / LineTerminator) SourceCharacter)* "*/"
+
+SingleLineComment
+  = "//" (!LineTerminator SourceCharacter)*
+
+LineTerminator
+  = [\n\r\u2028\u2029]
+__
+  = (WhiteSpace / LineTerminatorSequence / Comment)*
+
+_
+  = (WhiteSpace / MultiLineCommentNoLineTerminator)*
+
+EOS
+  = __ ";"
+  / _ SingleLineComment? LineTerminatorSequence
+  / _ &"}"
+  / __ EOF
+
+EOF
+  = !.
