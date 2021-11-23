@@ -1,7 +1,11 @@
 const fs = require('fs')
 const peggy = require("peggy")
 
-const peg_files = ["./peg/boot.pegjs", "./peg/statement.pegjs", "./peg/core.pegjs"]
+const peg_files = ["./peg/boot.pegjs"
+    , "./peg/statement.pegjs"
+    , "./peg/expression.pegjs"
+    , "./peg/object.pegjs"
+    , "./peg/core.pegjs"]
 
 let peg_text = ""
 for (const peg_file of peg_files) {
@@ -10,6 +14,6 @@ for (const peg_file of peg_files) {
 
 
 const parser = peggy.generate(peg_text)
-const result = parser.parse('{ "abc":"あいうえお","xyz" :[1,2]}')
+const result = parser.parse(fs.readFileSync("./program.txt", 'utf8'))
 
 console.log(JSON.stringify(result, null, 2))
