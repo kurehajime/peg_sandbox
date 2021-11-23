@@ -9,7 +9,7 @@ const peg_files = ["./peg/boot.pegjs"
 
 let peg_text = ""
 for (const peg_file of peg_files) {
-    peg_text += fs.readFileSync(peg_file, 'utf8')
+    peg_text += fs.readFileSync(peg_file, 'utf8') + "\n"
 }
 
 

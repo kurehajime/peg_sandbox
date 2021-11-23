@@ -15,8 +15,18 @@
     return { type:"array",
             members:values };
   }
+  function buildBinaryExpression(head, tail) {
+    return tail.reduce(function(result, element) {
+      return {
+        type: "Expression",
+        operator: element[1],
+        left: result,
+        right: element[3]
+      };
+    }, head);
+  }
 }}
 
 
 ROOT
-  = _ value:value _ { return value; }
+  = (_ value:STATEMENT _ { return value; })*
