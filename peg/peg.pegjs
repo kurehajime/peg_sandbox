@@ -11,6 +11,10 @@
     return { type:"hash",
             members:key_values };
   }
+  function arr(values){
+    return { type:"array",
+            members:values };
+  }
 }}
 JSON_text
   = ws value:value ws { return value; }
@@ -51,7 +55,7 @@ object
       }
     )?
     end_object
-    { return members !== null ? members: hash(); }
+    { return members !== null ? members: hash([]); }
 
 member
   = name:string name_separator value:value {
@@ -65,10 +69,10 @@ array
     values:(
       head:value
       tail:(value_separator v:value { return v; })*
-      { return [head].concat(tail); }
+      { return arr([head].concat(tail)); }
     )?
     end_array
-    { return values !== null ? values : []; }
+    { return values !== null ? values : arr([]); }
 
 // ----- 6. Numbers -----
 
