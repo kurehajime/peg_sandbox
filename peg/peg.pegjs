@@ -1,5 +1,17 @@
 // https://github.com/pegjs/pegjs/blob/master/examples/json.pegjs
-
+{{
+  function lit(value){
+    return { type: "lit", value: value };
+  }
+  function key_value(name,value){
+    return { type:"key_value",
+            name:name, value: value };
+  }
+  function hash(key_values){
+    return { type:"hash",
+            members:key_values };
+  }
+}}
 JSON_text
   = ws value:value ws { return value; }
 
@@ -23,9 +35,9 @@ value
   / number
   / string
 
-false = "false" { return false; }
-null  = "null"  { return null;  }
-true  = "true"  { return true;  }
+false = "false" { return lit(false); }
+null  = "null"  { return lit(null);  }
+true  = "true"  { return lit(true);  }
 
 // ----- 4. Objects -----
 
@@ -35,21 +47,15 @@ object
       head:member
       tail:(value_separator m:member { return m; })*
       {
-        var result = {};
-
-        [head].concat(tail).forEach(function(element) {
-          result[element.name] = element.value;
-        });
-
-        return result;
+        return hash([head].concat(tail));
       }
     )?
     end_object
-    { return members !== null ? members: {}; }
+    { return members !== null ? members: hash(); }
 
 member
   = name:string name_separator value:value {
-      return { name: name, value: value };
+      return key_value(name,value);
     }
 
 // ----- 5. Arrays -----
@@ -67,7 +73,7 @@ array
 // ----- 6. Numbers -----
 
 number "number"
-  = minus? int frac? exp? { return parseFloat(text()); }
+  = minus? int frac? exp? { return lit(parseFloat(text())); }
 
 decimal_point
   = "."
@@ -100,7 +106,7 @@ zero
 
 string "string" 
     = '"' chars:char* '"'  { 
-        return chars.join(""); 
+        return lit(chars.join("")); 
     }
 
 char
