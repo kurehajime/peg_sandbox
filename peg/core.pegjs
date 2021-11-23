@@ -1,36 +1,11 @@
-// https://github.com/pegjs/pegjs/blob/master/examples/json.pegjs
-{{
-  function lit(value){
-    return { type: "lit", value: value };
-  }
-  function key_value(name,value){
-    return { type:"key_value",
-            name:name, value: value };
-  }
-  function hash(key_values){
-    return { type:"hash",
-            members:key_values };
-  }
-  function arr(values){
-    return { type:"array",
-            members:values };
-  }
-}}
 
+begin_array     = _ "[" _
+begin_object    = _ "{" _
+end_array       = _ "]" _
+end_object      = _ "}" _
+name_separator  = _ ":" _
+value_separator = _ "," _
 
-
-
-JSON_text
-  = ws value:value ws { return value; }
-
-begin_array     = ws "[" ws
-begin_object    = ws "{" ws
-end_array       = ws "]" ws
-end_object      = ws "}" ws
-name_separator  = ws ":" ws
-value_separator = ws "," ws
-
-ws "whitespace" = [ \t\n\r]*
 
 // ----- Values -----
 
@@ -46,37 +21,6 @@ value
 false = "false" { return lit(false); }
 null  = "null"  { return lit(null);  }
 true  = "true"  { return lit(true);  }
-
-// ----- Objects -----
-
-object
-  = begin_object
-    members:(
-      head:member
-      tail:(value_separator m:member { return m; })*
-      {
-        return hash([head].concat(tail));
-      }
-    )?
-    end_object
-    { return members !== null ? members: hash([]); }
-
-member
-  = name:string name_separator value:value {
-      return key_value(name,value);
-    }
-
-// ----- Arrays -----
-
-array
-  = begin_array
-    values:(
-      head:value
-      tail:(value_separator v:value { return v; })*
-      { return arr([head].concat(tail)); }
-    )?
-    end_array
-    { return values !== null ? values : arr([]); }
 
 // ----- Numbers -----
 
