@@ -1,6 +1,7 @@
 PlusMinus
   = $("+" ![+=])
   / $("-" ![-=])
+
 MultiDiv
   = $("*" !"=")
   / $("/" !"=")
@@ -8,7 +9,7 @@ MultiDiv
 
 Factor
   = "(" _ exp:Expression _ ")"{return exp;}
-  / number
+  / value
 
 Expression
   = PlusMinusExpression
