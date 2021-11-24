@@ -58,12 +58,12 @@ zero
 
 id "id" 
     = w:word { 
-        return lit(w); 
+        return w; 
     }
 
 word "word" 
     = _ head:non_number_char tail:char* _ { 
-        return lit(head + tail.join("")); 
+        return head + tail.join(""); 
     }
 
 non_number_char
