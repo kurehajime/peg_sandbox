@@ -28,6 +28,12 @@
   function ref(value){
     return { type: "ref", name: value };
   }
+  function aka(name,exp){
+    return { type: "aka", name: name , value:exp };
+  }
+  function equal(name,exp){
+    return { type: "equal", name: name , value:exp };
+  }
 }}
 
 

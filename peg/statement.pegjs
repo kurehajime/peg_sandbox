@@ -9,12 +9,8 @@ AkaToken
   = _ "aka" _
 
 AkaStatement
-  = _ exp:Expression AkaToken name:id _ EOS {
-      return {
-        type: "aka",
-        name: name,
-        value: exp
-      };
+  = _ exp:Expression AkaToken name:RefExpression _ EOS {
+      return aka(name,exp);
     }
 
 // ----- 代入 -----
@@ -22,11 +18,7 @@ EqualToken
   = _ "=" _
 
 EqualStatement
-  = _ name:id EqualToken exp:Expression _  EOS {
-      return {
-        type: "equal",
-        name: name,
-        value: exp
-      };
+  = _ name:RefExpression EqualToken exp:Expression _  EOS {
+      return equal(name,exp);
     }
 
