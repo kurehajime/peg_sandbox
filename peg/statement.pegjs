@@ -2,6 +2,8 @@ STATEMENT
   = AkaStatement 
   / Expression
 
+// ----- 変数宣言 -----
+
 AkaToken
   = _ "aka" _
 
