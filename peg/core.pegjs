@@ -56,6 +56,11 @@ zero
 
 // ----- Strings -----
 
+id "id" 
+    = _ chars:char* _  { 
+        return lit(chars.join("")); 
+    }
+
 string "string" 
     = '"' chars:char* '"'  { 
         return lit(chars.join("")); 
