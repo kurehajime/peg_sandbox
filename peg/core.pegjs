@@ -57,8 +57,18 @@ zero
 // ----- Strings -----
 
 id "id" 
-    = _ chars:char* _  { 
-        return lit(chars.join("")); 
+    = w:word { 
+        return lit(w); 
+    }
+
+word "word" 
+    = _ head:non_number_char tail:char* _ { 
+        return lit(head + tail.join("")); 
+    }
+
+non_number_char
+    =  c:char !number{
+      return c; 
     }
 
 string "string" 

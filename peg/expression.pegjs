@@ -10,6 +10,7 @@ MultiDiv
 Factor
   = "(" _ exp:Expression _ ")"{return exp;}
   / value
+  / RefExpression
 
 Expression
   = PlusMinusExpression
@@ -23,3 +24,8 @@ MultiDivExpression
   = head:Factor tail:(_ MultiDiv _ Factor)* {
       return buildBinaryExpression(head, tail);
     }
+
+RefExpression
+  = name:id {
+    return ref(name);
+  }

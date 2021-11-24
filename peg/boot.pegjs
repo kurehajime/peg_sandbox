@@ -25,6 +25,9 @@
       };
     }, head);
   }
+  function ref(value){
+    return { type: "ref", name: value };
+  }
 }}
 
 
