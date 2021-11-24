@@ -16,6 +16,9 @@ member
   = name:string name_separator value:value {
       return key_value(name,value);
     }
+  / name:id name_separator value:value {
+      return key_value(name,value);
+    }
 
 // ----- Arrays -----
 

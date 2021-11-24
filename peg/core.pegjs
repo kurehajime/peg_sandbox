@@ -62,7 +62,7 @@ id "id"
     }
 
 word "word" 
-    = _ head:non_number_char tail:char* _ { 
+    = _ head:non_number_char tail:id_char* _ { 
         return head + tail.join(""); 
     }
 
@@ -70,6 +70,15 @@ non_number_char
     =  c:char !number{
       return c; 
     }
+
+id_char
+    =  !ng_id_char c:char{
+      return c; 
+    }
+
+ng_id_char
+  = WhiteSpace
+  / ":"
 
 string "string" 
     = '"' chars:char* '"'  { 
