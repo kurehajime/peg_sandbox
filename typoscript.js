@@ -9,9 +9,9 @@ function main() {
 
 
     const parser = peggy.generate(peg_text)
-    const parsed = parser.parse(fs.readFileSync("./codo.txt", 'utf8'))
+    const parsed = parser.parse(fs.readFileSync("./codo.js", 'utf8'))
     const evaluter = new Evaluter()
-    evaluter.evalute(parsed)
+    evaluter.evalute(new Env(), parsed)
     //console.log(JSON.stringify(result, null, 2))
 
 }
@@ -21,29 +21,42 @@ class Function {
         this.body = _body
     }
 }
-
-class Evaluter {
+class Env {
     constructor() {
         this.functions = {}
+        this.local = {}
+        this.gloval = {}
     }
+}
 
-    Program(body) {
+class Evaluter {
+    Program(env, body) {
         for (const item of body) {
-            this.evalute(item)
+            this.evalute(env, item)
         }
     }
-    FunctionDeclaration(id, params, body) {
-        this.functions[id] = new Function(id, body)
+    FunctionDeclaration(env, id, params, body) {
+        env.functions[id] = new Function(id, body)
+    }
+    ForStatement(env, init, test, update, body) {
+        this.evalute(env, init)
+        while (this.evalute(env, test)) {
+            this.evalute(env, body)
+            this.evalute(env, update)
+        }
     }
 
-    evalute(tree) {
+    evalute(env, tree) {
         const type = tree != undefined ? tree.type : ""
         switch (type) {
             case "Program":
-                this.Program(tree.body)
+                this.Program(env, tree.body)
                 break;
             case "FunctionDeclaration":
-                this.FunctionDeclaration(tree.id, tree.params, tree.body)
+                this.FunctionDeclaration(env, tree.id, tree.params, tree.body)
+                break;
+            case "ForStatement":
+                this.ForStatement(env, tree.init, tree.test, tree.update, tree.body)
                 break;
             default:
                 console.log(tree)
