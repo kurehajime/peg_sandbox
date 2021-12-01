@@ -11,9 +11,10 @@ function main() {
     const parser = peggy.generate(peg_text)
     const parsed = parser.parse(fs.readFileSync("./codo.js", 'utf8'))
     const evaluter = new Evaluter()
-    evaluter.evalute(new Env(), parsed)
-    //console.log(JSON.stringify(result, null, 2))
-
+    const env = new Env()
+    result = evaluter.evalute(env, parsed)
+    console.log(result)
+    console.log(env)
 }
 class Function {
     constructor(_name, _body) {
@@ -26,18 +27,22 @@ class Env {
         this.functions = {}
         this.local = {}
         this.gloval = {}
-        this.stack = []
+        this.result = null
         this.is_return = false
     }
 }
 
 class Evaluter {
+    Identifier(env, name) {
+        return name
+    }
+
     Program(env, body) {
         for (const item of body) {
             this.evalute(env, item)
             if (env.is_return) {
                 env.is_return = false
-                return env.stack.pop
+                return env.result
             }
         }
     }
@@ -67,13 +72,43 @@ class Evaluter {
         return
     }
     ReturnStatement(env, argument) {
-        return this.evalute(env, argument)
+        env.result = this.evalute(env, argument)
+        env.is_return = true
     }
+    IfStatement(env, test, consequent, alternate) {
+        let result = this.evalute(env, test)
+        if (result) {
+            this.evalute(env, consequent)
+        } else if (alternate) {
+            this.evalute(env, alternate)
+        }
+    }
+    WhileStatement(env, test, body) {
+        while (this.evalute(env, test)) {
+            this.evalute(env, body)
+        }
+    }
+    VariableDeclaration(env, declarations, kind) {
+        for (const item of declarations) {
+            this.evalute(env, item)
+        }
+    }
+    VariableDeclarator(env, id, init) {
+        env.local[this.evalute(env, id)] = this.evalute(env, init)
+    }
+    ArrayExpression(env, elements) {
+        elements.map((x) => {
+            return this.evalute(env, x)
+        })
+    }
+
 
 
     evalute(env, tree) {
         const type = tree != undefined ? tree.type : ""
         switch (type) {
+            case "Identifier":
+                return this.Identifier(env, tree.name)
             case "Program":
                 return this.Program(env, tree.body)
             case "FunctionDeclaration":
@@ -92,6 +127,16 @@ class Evaluter {
                 return this.EmptyStatement(env)
             case "ReturnStatement":
                 return this.ReturnStatement(env, tree.argument)
+            case "IfStatement":
+                return this.IfStatement(env, tree.test, tree.consequent, tree.alternate)
+            case "WhileStatement":
+                return this.WhileStatement(env, tree.test, tree.body)
+            case "VariableDeclaration":
+                return this.VariableDeclaration(env, tree.declarations, tree.kind)
+            case "VariableDeclarator":
+                return this.VariableDeclarator(env, tree.id, tree.init)
+            case "ArrayExpression":
+                return this.ArrayExpression(env, tree.elements)
             default:
                 console.log(tree)
                 break;
