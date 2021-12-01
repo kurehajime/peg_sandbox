@@ -127,6 +127,20 @@ class Evaluter {
                 this.evalute(env, argument)
         }
     }
+    CallExpression(env, callee, _arguments) {
+        let fn = this.evalute(env, callee)
+        let args = _arguments.map((x) => {
+            if (x.type === "Literal") {
+                return this.evalute(env, x)
+            }
+            if (x.type === "Identifier") {
+                return env.local[this.evalute(env, x)]
+            }
+        })
+        if (fn === "p") {
+            console.log(args)
+        }
+    }
 
 
 
@@ -168,6 +182,8 @@ class Evaluter {
                 return this.UnaryExpression(env, tree.operator, tree.argument, tree.prefix)
             case "UpdateExpression":
                 return this.UpdateExpression(env, tree.operator, tree.argument, tree.prefix)
+            case "CallExpression":
+                return this.CallExpression(env, tree.callee, tree.arguments)
             default:
                 console.log(tree)
                 break;
