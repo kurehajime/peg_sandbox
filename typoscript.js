@@ -101,6 +101,33 @@ class Evaluter {
             return this.evalute(env, x)
         })
     }
+    UnaryExpression(env, operator, argument, prefix) {
+        switch (operator) {
+            case "+":
+                return this.evalute(env, argument)
+            case "-":
+                return -1 * this.evalute(env, argument)
+            case "!":
+                return !this.evalute(env, argument)
+            default:
+                this.evalute(env, argument)
+        }
+    }
+    UpdateExpression(env, operator, argument, prefix) {
+        switch (operator) {
+            case "++":
+                if (argument.type === 'Identifier') {
+                    return env.local[argument.name]++
+                }
+            case "--":
+                if (argument.type === 'Identifier') {
+                    return env.local[argument.name]--
+                }
+            default:
+                this.evalute(env, argument)
+        }
+    }
+
 
 
 
@@ -137,6 +164,10 @@ class Evaluter {
                 return this.VariableDeclarator(env, tree.id, tree.init)
             case "ArrayExpression":
                 return this.ArrayExpression(env, tree.elements)
+            case "UnaryExpression":
+                return this.UnaryExpression(env, tree.operator, tree.argument, tree.prefix)
+            case "UpdateExpression":
+                return this.UpdateExpression(env, tree.operator, tree.argument, tree.prefix)
             default:
                 console.log(tree)
                 break;
