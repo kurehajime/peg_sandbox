@@ -228,7 +228,29 @@ class Evaluter {
         }
 
     }
+    LogicalExpression(env, operator, left, right) {
+        let op = this.evalute(env, operator)
+        let l = this.evalute(env, left)
+        let r = this.evalute(env, right)
 
+        switch (op) {
+            case "||":
+                return l || r
+            case "&&":
+                return l && r
+            default:
+                break;
+        }
+
+    }
+    MemberExpression(env, object, property, computed) {
+        let ob = this.evalute(env, object)
+        let pro = this.evalute(env, property)
+        return ob[pro]
+    }
+    ConditionalExpression(env, test, consequent, alternate) {
+        return this.IfStatement(env, test, consequent, alternate)
+    }
 
     evalute(env, tree) {
         if (tree == undefined || tree.type == undefined) {
@@ -276,6 +298,12 @@ class Evaluter {
                 return this.BinaryExpression(env, tree.operator, tree.left, tree.right)
             case "AssignmentExpression":
                 return this.AssignmentExpression(env, tree.operator, tree.left, tree.right)
+            case "LogicalExpression":
+                return this.LogicalExpression(env, tree.operator, tree.left, tree.right)
+            case "MemberExpression":
+                return this.MemberExpression(env, tree.object, tree.property, tree.computed)
+            case "ConditionalExpression":
+                return this.IfStatement(env, tree.test, tree.consequent, tree.alternate)
             default:
                 console.log(tree)
                 break;
