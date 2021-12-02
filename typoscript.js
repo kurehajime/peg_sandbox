@@ -193,6 +193,42 @@ class Evaluter {
                 break;
         }
     }
+    AssignmentExpression(env, operator, left, right) {
+        let op = this.evalute(env, operator)
+        let l = this.evalute(env, left)
+        let r = this.evalute(env, right)
+
+        switch (op) {
+            case "=":
+                return env.local[l] = r
+            case "+=":
+                return env.local[l] += r
+            case "-=":
+                return env.local[l] -= r
+            case "*=":
+                return env.local[l] *= r
+            case "/=":
+                return env.local[l] /= r
+            case "%=":
+                return env.local[l] %= r
+            case "<<=":
+                return env.local[l] <<= r
+            case ">>=":
+                return env.local[l] >>= r
+            case ">>>=":
+                return env.local[l] >>>= r
+            case "|=":
+                return env.local[l] |= r
+            case "^=":
+                return env.local[l] ^= r
+            case "&=":
+                return env.local[l] &= r
+            default:
+                break;
+        }
+
+    }
+
 
     evalute(env, tree) {
         if (tree == undefined || tree.type == undefined) {
@@ -238,6 +274,8 @@ class Evaluter {
                 return this.CallExpression(env, tree.callee, tree.arguments)
             case "BinaryExpression":
                 return this.BinaryExpression(env, tree.operator, tree.left, tree.right)
+            case "AssignmentExpression":
+                return this.AssignmentExpression(env, tree.operator, tree.left, tree.right)
             default:
                 console.log(tree)
                 break;
