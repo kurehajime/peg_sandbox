@@ -130,23 +130,75 @@ class Evaluter {
     CallExpression(env, callee, _arguments) {
         let fn = this.evalute(env, callee)
         let args = _arguments.map((x) => {
-            if (x.type === "Literal") {
-                return this.evalute(env, x)
-            }
             if (x.type === "Identifier") {
                 return env.local[this.evalute(env, x)]
             }
+            return this.evalute(env, x)
         })
         if (fn === "p") {
             console.log(args)
         }
     }
+    BinaryExpression(env, operator, left, right) {
+        let op = operator
+        let l = this.evalute(env, left)
+        let r = this.evalute(env, right)
 
-
-
+        switch (op) {
+            case "==":
+                return l == r
+            case "!=":
+                return l != r
+            case "===":
+                return l === r
+            case "!==":
+                return l !== r
+            case "<":
+                return l < r
+            case "<=":
+                return l <= r
+            case ">":
+                return l > r
+            case ">=":
+                return l >= r
+            case "<<":
+                return l << r
+            case ">>":
+                return l >> r
+            case ">>":
+                return l >> r
+            case ">>>":
+                return l >>> r
+            case "+":
+                return l + r
+            case "-":
+                return l - r
+            case "*":
+                return l * r
+            case "/":
+                return l / r
+            case "%":
+                return l % r
+            case "|":
+                return l | r
+            case "^":
+                return l ^ r
+            case "&":
+                return l & r
+            case "in":
+                return l in r
+            case "instanceof":
+                return l instanceof r
+            default:
+                break;
+        }
+    }
 
     evalute(env, tree) {
-        const type = tree != undefined ? tree.type : ""
+        if (tree == undefined || tree.type == undefined) {
+            return tree
+        }
+        const type = tree.type
         switch (type) {
             case "Identifier":
                 return this.Identifier(env, tree.name)
@@ -184,6 +236,8 @@ class Evaluter {
                 return this.UpdateExpression(env, tree.operator, tree.argument, tree.prefix)
             case "CallExpression":
                 return this.CallExpression(env, tree.callee, tree.arguments)
+            case "BinaryExpression":
+                return this.BinaryExpression(env, tree.operator, tree.left, tree.right)
             default:
                 console.log(tree)
                 break;

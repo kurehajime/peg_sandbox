@@ -1,2 +1,2 @@
-var a = "hello"
-p(1, a)
+var a = 1 == 1
+p(1 == a)
