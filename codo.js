@@ -1,1 +1,5 @@
-p([1, 2, 3])
+function say(name) {
+    p(name)
+}
+
+say("hello")

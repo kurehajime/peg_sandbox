@@ -17,9 +17,10 @@ function main() {
     console.log(env)
 }
 class Function {
-    constructor(_name, _body) {
+    constructor(_name, _body, _args) {
         this.name = _name
         this.body = _body
+        this.args = _args
     }
 }
 class Env {
@@ -47,7 +48,11 @@ class Evaluter {
         }
     }
     FunctionDeclaration(env, id, params, body) {
-        env.functions[id] = new Function(id, body)
+        let name = this.evalute(env, id)
+        let args = params.map((x) => {
+            return this.evalute(env, x)
+        })
+        env.functions[name] = new Function(name, body, args)
     }
     ForStatement(env, init, test, update, body) {
         this.evalute(env, init)
@@ -136,7 +141,20 @@ class Evaluter {
             return this.evalute(env, x)
         })
         if (fn === "p") {
-            console.log(args)
+            args.forEach(element => {
+                console.log(element)
+            });
+        }
+        let hits = env.functions[fn]
+        if (hits) {
+            let new_env = Object.assign({}, env)
+            let i = 0
+            for (const name of hits.args) {
+                new_env.local[name] = args[i]
+                i++
+            }
+            this.evalute(new_env, hits.body)
+            return new_env.result
         }
     }
     BinaryExpression(env, operator, left, right) {
