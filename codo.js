@@ -1,8 +1,14 @@
-function fuzz_buzz(count) {
-    p(count)
-    for (var i = 0; i < 10; i++) {
-        p(i)
+function fizz_buzz(count) {
+    for (var i = 1; i <= count; i++) {
+        if (i % 3 === 0 && i % 5 === 0) {
+            p("FizzBuzz")
+        } else if (i % 3 === 0) {
+            p("Fizz")
+        } else if (i % 5 === 0) {
+            p("Buzz")
+        } else {
+            p(i)
+        }
     }
-    return 42
 }
-return fuzz_buzz(10)
+return fizz_buzz(15)

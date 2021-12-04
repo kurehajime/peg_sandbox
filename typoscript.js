@@ -13,8 +13,8 @@ function main() {
     const evaluter = new Evaluter()
     const env = new Env()
     result = evaluter.evalute(env, parsed)
-    console.log(result)
-    console.log(env)
+    //console.log(result)
+    //console.log(env)
 }
 class Function {
     constructor(_name, _body, _args) {
