@@ -35,7 +35,10 @@ class Env {
 
 class Evaluter {
     Identifier(env, name) {
-        return name
+        return env.local[name]
+    }
+    Assign(env, operator, identifier, value) {
+        return Function('env.local[identifier.name] ' + operator + ' value')();
     }
 
     Program(env, body) {
@@ -48,9 +51,9 @@ class Evaluter {
         }
     }
     FunctionDeclaration(env, id, params, body) {
-        let name = this.evalute(env, id)
+        let name = id.name
         let args = params.map((x) => {
-            return this.evalute(env, x)
+            return x.name
         })
         env.functions[name] = new Function(name, body, args)
     }
@@ -99,7 +102,7 @@ class Evaluter {
         }
     }
     VariableDeclarator(env, id, init) {
-        env.local[this.evalute(env, id)] = this.evalute(env, init)
+        env.local[id.name] = this.evalute(env, init)
     }
     ArrayExpression(env, elements) {
         elements.map((x) => {
@@ -133,10 +136,10 @@ class Evaluter {
         }
     }
     CallExpression(env, callee, _arguments) {
-        let fn = this.evalute(env, callee)
+        let fn = callee.name
         let args = _arguments.map((x) => {
             if (x.type === "Identifier") {
-                return env.local[this.evalute(env, x)]
+                return env.local[x.name]
             }
             return this.evalute(env, x)
         })
@@ -144,6 +147,7 @@ class Evaluter {
             args.forEach(element => {
                 console.log(element)
             });
+            return
         }
         let hits = env.functions[fn]
         if (hits) {
@@ -212,39 +216,7 @@ class Evaluter {
         }
     }
     AssignmentExpression(env, operator, left, right) {
-        let op = this.evalute(env, operator)
-        let l = this.evalute(env, left)
-        let r = this.evalute(env, right)
-
-        switch (op) {
-            case "=":
-                return env.local[l] = r
-            case "+=":
-                return env.local[l] += r
-            case "-=":
-                return env.local[l] -= r
-            case "*=":
-                return env.local[l] *= r
-            case "/=":
-                return env.local[l] /= r
-            case "%=":
-                return env.local[l] %= r
-            case "<<=":
-                return env.local[l] <<= r
-            case ">>=":
-                return env.local[l] >>= r
-            case ">>>=":
-                return env.local[l] >>>= r
-            case "|=":
-                return env.local[l] |= r
-            case "^=":
-                return env.local[l] ^= r
-            case "&=":
-                return env.local[l] &= r
-            default:
-                break;
-        }
-
+        return Assign(env, this.evalute(env, operator), this.evalute(env, left), this.evalute(env, right))
     }
     LogicalExpression(env, operator, left, right) {
         let op = this.evalute(env, operator)

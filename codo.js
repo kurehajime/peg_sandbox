@@ -1,5 +1,8 @@
-function say(name) {
-    p(name)
+function fuzz_buzz(count) {
+    p(count)
+    for (var i = 0; i < 10; i++) {
+        p(i)
+    }
+    return 42
 }
-
-say("hello")
+return fuzz_buzz(10)
