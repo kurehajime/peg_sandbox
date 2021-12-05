@@ -13,8 +13,7 @@ function main() {
     const evaluter = new Evaluter()
     const env = new Env()
     result = evaluter.evalute(env, parsed)
-    //console.log(result)
-    //console.log(env)
+    console.log(env)
 }
 class Function {
     constructor(_name, _body, _args) {
@@ -26,8 +25,7 @@ class Function {
 class Env {
     constructor() {
         this.functions = {}
-        this.local = {}
-        this.gloval = {}
+        this.values = {}
         this.result = null
         this.is_return = false
     }
@@ -35,10 +33,40 @@ class Env {
 
 class Evaluter {
     Identifier(env, name) {
-        return env.local[name]
+        return env.values[name]
     }
+
     Assign(env, operator, identifier, value) {
-        return Function('env.local[identifier.name] ' + operator + ' value')();
+        let op = this.evalute(env, operator)
+
+        switch (op) {
+            case "=":
+                return env.values[identifier.name] = value
+            case "+=":
+                return env.values[identifier.name] += value
+            case "-=":
+                return env.values[identifier.name] -= value
+            case "*=":
+                return env.values[identifier.name] *= value
+            case "/=":
+                return env.values[identifier.name] /= value
+            case "%=":
+                return env.values[identifier.name] %= value
+            case "<<=":
+                return env.values[identifier.name] <<= value
+            case ">>=":
+                return env.values[identifier.name] >>= value
+            case ">>>=":
+                return env.values[identifier.name] >>>= value
+            case "|=":
+                return env.values[identifier.name] |= value
+            case "^=":
+                return env.values[identifier.name] ^= value
+            case "&=":
+                return env.values[identifier.name] &= value
+            default:
+                break;
+        }
     }
 
     Program(env, body) {
@@ -102,7 +130,7 @@ class Evaluter {
         }
     }
     VariableDeclarator(env, id, init) {
-        env.local[id.name] = this.evalute(env, init)
+        this.Assign(env, "=", id, this.evalute(env, init))
     }
     ArrayExpression(env, elements) {
         elements.map((x) => {
@@ -125,11 +153,11 @@ class Evaluter {
         switch (operator) {
             case "++":
                 if (argument.type === 'Identifier') {
-                    return env.local[argument.name]++
+                    return env.values[argument.name]++
                 }
             case "--":
                 if (argument.type === 'Identifier') {
-                    return env.local[argument.name]--
+                    return env.values[argument.name]--
                 }
             default:
                 this.evalute(env, argument)
@@ -139,7 +167,7 @@ class Evaluter {
         let fn = callee.name
         let args = _arguments.map((x) => {
             if (x.type === "Identifier") {
-                return env.local[x.name]
+                return env.values[x.name]
             }
             return this.evalute(env, x)
         })
@@ -154,7 +182,7 @@ class Evaluter {
             let new_env = Object.assign({}, env)
             let i = 0
             for (const name of hits.args) {
-                new_env.local[name] = args[i]
+                new_env.values[name] = args[i]
                 i++
             }
             this.evalute(new_env, hits.body)
@@ -216,7 +244,7 @@ class Evaluter {
         }
     }
     AssignmentExpression(env, operator, left, right) {
-        return Assign(env, this.evalute(env, operator), this.evalute(env, left), this.evalute(env, right))
+        return this.Assign(env, this.evalute(env, operator), left, this.evalute(env, right))
     }
     LogicalExpression(env, operator, left, right) {
         let op = this.evalute(env, operator)

@@ -11,4 +11,6 @@ function fizz_buzz(count) {
         }
     }
 }
-return fizz_buzz(15)
+var a = 1
+a = 2
+return fizz_buzz(5)
