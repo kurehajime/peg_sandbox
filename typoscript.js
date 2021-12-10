@@ -9,7 +9,7 @@ function main() {
 
 
     const parser = peggy.generate(peg_text)
-    const parsed = parser.parse(fs.readFileSync("./kode.js", 'utf8'))
+    const parsed = parser.parse(fs.readFileSync(process.argv[2], 'utf8'))
     const evaluter = new Evaluter()
     const env = new Env()
     result = evaluter.evalute(env, parsed)
