@@ -18,5 +18,8 @@
   "homepage": "https://github.com/kurehajime/peg_sandbox#readme",
   "dependencies": {
     "peggy": "^1.2.0"
+  },
+  "devDependencies": {
+    "jest": "^27.4.4"
   }
 }
