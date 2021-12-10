@@ -13,4 +13,4 @@ function fizz_buzz(count) {
 }
 var a = 1
 a = 2
-return fizz_buzz(5)
+return fizu_bazz(5)

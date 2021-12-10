@@ -9,13 +9,11 @@ function main() {
 
 
     const parser = peggy.generate(peg_text)
-    const parsed = parser.parse(fs.readFileSync("./codo.js", 'utf8'))
+    const parsed = parser.parse(fs.readFileSync("./kode.js", 'utf8'))
     const evaluter = new Evaluter()
     const env = new Env()
     result = evaluter.evalute(env, parsed)
     console.log(env)
-
-    console.log(lvd("kitten", "sitting"))
 }
 class Function {
     constructor(_name, _body, _args) {
@@ -41,40 +39,61 @@ function lvd(s1, s2) {
     let swap = lvd(s1.slice(1), s2.slice(1))
     return 1 + Math.min(add, del, swap)
 }
+function fuzKey(dict, key, threshold) {
+    if (key in dict) {
+        return key
+    }
+    let min = Number.MAX_SAFE_INTEGER
+    let result = null
+    for (const k in dict) {
+        let lv = (lvd(key, k) * 1.0) / key.length
+        if (lv < min && lv <= threshold) {
+            result = k
+            min = lv
+        }
+    }
+    if (result !== null) {
+        return result
+    }
+    return key
+}
 
 class Evaluter {
+    constructor() {
+        this.THRESHOLD = 0.25
+    }
     Identifier(env, name) {
         return env.values[name]
     }
 
     Assign(env, operator, identifier, value) {
         let op = this.evalute(env, operator)
-
+        let name = fuzKey(env.values, identifier.name, this.THRESHOLD)
         switch (op) {
             case "=":
-                return env.values[identifier.name] = value
+                return env.values[name] = value
             case "+=":
-                return env.values[identifier.name] += value
+                return env.values[name] += value
             case "-=":
-                return env.values[identifier.name] -= value
+                return env.values[name] -= value
             case "*=":
-                return env.values[identifier.name] *= value
+                return env.values[name] *= value
             case "/=":
-                return env.values[identifier.name] /= value
+                return env.values[name] /= value
             case "%=":
-                return env.values[identifier.name] %= value
+                return env.values[name] %= value
             case "<<=":
-                return env.values[identifier.name] <<= value
+                return env.values[name] <<= value
             case ">>=":
-                return env.values[identifier.name] >>= value
+                return env.values[name] >>= value
             case ">>>=":
-                return env.values[identifier.name] >>>= value
+                return env.values[name] >>>= value
             case "|=":
-                return env.values[identifier.name] |= value
+                return env.values[name] |= value
             case "^=":
-                return env.values[identifier.name] ^= value
+                return env.values[name] ^= value
             case "&=":
-                return env.values[identifier.name] &= value
+                return env.values[name] &= value
             default:
                 break;
         }
@@ -175,20 +194,20 @@ class Evaluter {
         }
     }
     CallExpression(env, callee, _arguments) {
-        let fn = callee.name
+        let name = fuzKey(env.functions, callee.name, this.THRESHOLD)
         let args = _arguments.map((x) => {
             if (x.type === "Identifier") {
                 return env.values[x.name]
             }
             return this.evalute(env, x)
         })
-        if (fn === "p") {
+        if (name === "p") {
             args.forEach(element => {
                 console.log(element)
             });
             return
         }
-        let hits = env.functions[fn]
+        let hits = env.functions[name]
         if (hits) {
             let new_env = Object.assign({}, env)
             let i = 0
