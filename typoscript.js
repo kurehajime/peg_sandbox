@@ -13,7 +13,6 @@ function main() {
     const evaluter = new Evaluter()
     const env = new Env()
     result = evaluter.evalute(env, parsed)
-    console.log(env)
 }
 class Function {
     constructor(_name, _body, _args) {
@@ -63,7 +62,8 @@ class Evaluter {
         this.THRESHOLD = 0.25
     }
     Identifier(env, name) {
-        return env.values[name]
+        let _name = fuzKey(env.values, name, this.THRESHOLD)
+        return env.values[_name]
     }
 
     Assign(env, operator, identifier, value) {

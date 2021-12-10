@@ -1,5 +1,5 @@
 function fizz_buzz(count) {
-    for (var i = 1; i <= count; i++) {
+    for (var i = 1; i <= caunt; i++) {
         if (i % 3 === 0 && i % 5 === 0) {
             p("FizzBuzz")
         } else if (i % 3 === 0) {
@@ -11,6 +11,5 @@ function fizz_buzz(count) {
         }
     }
 }
-var a = 1
-a = 2
-return fizu_bazz(5)
+
+fizu_bazz(15)
